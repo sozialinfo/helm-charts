@@ -1,0 +1,144 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-odoo
+  labels:
+    app: odoo
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: odoo
+  template:
+    metadata:
+      labels:
+        app: odoo
+    spec:
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range .Values.imagePullSecrets }}
+        - name: {{ .name }}
+        {{- end }}
+      {{- end }}
+      initContainers:
+        - name: init
+          image: {{ .Values.image }}
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -e
+              
+              # Download Odoo Enterprise if enabled
+              {{- if .Values.downloadOdooEnterprise }}
+              /entrypoint.sh download-odoo-enterprise && \
+              {{- end }}
+              
+              # Clone all addon repositories
+              /entrypoint.sh git-clone-addons && \
+              
+              # Initialize the database
+              /entrypoint.sh init-db && \
+              
+              # Install Sozialinfo-specific modules
+              SOZIALINFO_ADDONS=$(manifestoo --select-addons-dir /var/lib/odoo/git/github.com/sozialinfo/odoo-apps-sozialinfo list --separator=,) && \
+              /entrypoint.sh init-module $SOZIALINFO_ADDONS && \
+              
+              {{- if .Values.additionalModulesToInstall }}
+              # Install additional modules
+              ADDITIONAL_MODULES="{{ join "," .Values.additionalModulesToInstall }}" && \
+              /entrypoint.sh init-module $ADDITIONAL_MODULES && \
+              {{- end }}
+              
+              # Configure API endpoints and keys
+              odoo shell --database "$ODOO_DATABASE" << 'EOF'
+              # Sync FastAPI registry
+              env.ref('fastapi_base.fastapi_sozialinfo_endpoint_customerportal').action_sync_registry()
+              
+              # Create test API key only if it doesn't exist
+              existing_key = env['auth.api.key'].search([('name', '=', 'Test Key')])
+              if not existing_key:
+                  env['auth.api.key'].create({
+                      'name': 'Test Key', 
+                      'key': 'Ys+wIclz/CVQ8UL6Pcozmi9M5FKjt4HxY6xXyKJ3j+M=', 
+                      'user_id': 6
+                  })
+                  print("Created Test Key")
+              else:
+                  print("Test Key already exists, skipping creation")
+              
+              env.cr.commit()
+              EOF
+
+          envFrom:
+            - secretRef:
+                name: {{ .Values.githubAddonsCredentialsSecretName }}
+            - configMapRef:
+                name: {{ .Release.Name }}-configmap
+          env:
+            {{- if .Values.cnpg.enabled }}
+            - name: PGHOST
+              value: {{ .Release.Name }}-odoo-db-rw.{{ .Release.Namespace }}.svc.cluster.local
+            - name: PGUSER
+              value: {{ .Values.cnpg.cluster.bootstrap.initdb.user }}
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-odoo-db-app
+                  key: password
+            {{- end }}
+            {{- if .Values.extraEnv }}
+            {{- tpl .Values.extraEnv . | nindent 12 }}
+            {{- end }}
+          {{- if .Values.persistence.enabled }}
+          volumeMounts:
+          - name: odoo-data
+            mountPath: {{ .Values.persistence.mountPath }}
+          {{- end }}
+      containers:
+        - name: odoo
+          image: {{ .Values.image }}
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          ports:
+          - containerPort: 8069
+            name: http
+          - containerPort: 8072
+            name: websocket
+          envFrom:
+            - secretRef:
+                name: {{ .Values.githubAddonsCredentialsSecretName }}
+            - configMapRef:
+                name: {{ .Release.Name }}-configmap
+          env:
+            {{- if .Values.cnpg.enabled }}
+            - name: PGHOST
+              value: {{ .Release.Name }}-odoo-db-rw.{{ .Release.Namespace }}.svc.cluster.local
+            - name: PGUSER
+              value: {{ .Values.cnpg.cluster.bootstrap.initdb.user }}
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-odoo-db-app
+                  key: password
+            {{- end }}
+            {{- if .Values.externalServices.meilisearch.enabled }}
+            - name: PUBLIC_MEILISEARCH_HOST
+              value: "http://{{ tpl .Values.externalServices.meilisearch.serviceName . }}:{{ .Values.externalServices.meilisearch.port }}"
+            {{- end }}
+            {{- if .Values.extraEnv }}
+            {{- tpl .Values.extraEnv . | nindent 12 }}
+            {{- end }}
+          {{- if .Values.persistence.enabled  }}
+          volumeMounts:
+          - name: odoo-data
+            mountPath: {{ .Values.persistence.mountPath }}
+          {{- end }}
+      {{- if .Values.persistence.enabled }}
+      volumes:
+      - name: odoo-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistence.existingClaim | default (printf "%s-odoo-data-pvc" .Release.Name) }}
+      {{- end }}

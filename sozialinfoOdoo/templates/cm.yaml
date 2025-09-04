@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-configmap
+  labels:
+    app: odoo
+data:
+  ODOO_DATABASE: {{ .Values.database }}
+  ADDONS_GIT_REPOS: {{ join "," .Values.addonsGitRepos | quote }}
+  ODOO_ADDONS_PATH: "/var/lib/odoo/enterprise"
+  ODOO_INIT_LANG: {{ .Values.initLang | quote }}
+  PROXY_MODE: {{ .Values.proxyMode | quote }}
+  LIST_DB: {{ .Values.listDB | quote }}
+  WORKERS: {{ .Values.workers | default "2" | quote }}
+  MAX_CRON_THREADS: {{ .Values.maxCronThreads | default "1" | quote }}

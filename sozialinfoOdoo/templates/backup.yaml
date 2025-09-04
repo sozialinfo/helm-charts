@@ -1,0 +1,36 @@
+{{- if and .Values.k8up.enabled }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backup-repo
+  labels:
+    app: odoo
+data:
+  {{- $existingSecret := lookup "v1" "Secret" .Release.Namespace "backup-repo" }}
+  {{- if and $existingSecret (index $existingSecret.data "password") }}
+  password: {{ index $existingSecret.data "password" }}
+  {{- else }}
+  password:  {{ randAlphaNum 20 | b64enc | quote }}
+  {{- end }}
+---
+apiVersion: k8up.io/v1
+kind: Backup
+metadata:
+  name: {{ .Release.Name }}-backup
+spec:
+  failedJobsHistoryLimit: 2
+  successfulJobsHistoryLimit: 2
+  backend:
+    repoPasswordSecretRef:
+      name: backup-repo
+      key: password
+    s3:
+      endpoint: http://minio:9000
+      bucket: backup
+      accessKeyIDSecretRef:
+        name: minio-credentials
+        key: username
+      secretAccessKeySecretRef:
+        name: minio-credentials
+        key: password
+{{- end }}

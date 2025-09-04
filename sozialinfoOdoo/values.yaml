@@ -1,0 +1,160 @@
+## @section Ingress parameters
+##
+ingress:
+  ## @param ingress.enabled Enable or disable the ingress
+  ##
+  enabled: true
+  ## @param ingress.className The class name for the ingress
+  ##
+  className: nginx
+  ## @param ingress.clusterIssuerRef The cluster issuer reference for the ingress
+  ##
+  clusterIssuerRef:
+  ## @param ingress.host The host for the ingress
+  ##
+  host: odoo.knd.local
+
+## @section CloudNativePG parameters
+##
+cnpg:
+  enabled: true
+  cluster:
+    ## @param cnpg.cluster.nameOverride Override the name of the PostgreSQL cluster
+    ## Default: "{release-name}-postgresql"
+    ##
+    nameOverride: ""
+    ## @param cnpg.cluster.instances Number of PostgreSQL instances (1 for single, 2+ for high availability)
+    ##
+    instances: 1
+    storage:
+      ## @param cnpg.cluster.storage.size Persistent volume size for each instance
+      ##
+      size: 4Gi
+    ## @param cnpg.bootstrap Configure a database to run on cluster creation
+    bootstrap:
+      initdb:
+        ## @param cnpg.database.name Name of the PostgreSQL database to create
+        ##
+        name: odoo
+        ## @param cnpg.database.user Name of the database user (optional, defaults to database name)
+        ##
+        user: odoo
+        hostname: odoo-db
+        majorVersion: 16
+        ## @param cnpg.database.secretName Name of the secret to store credentials
+        ## Default: {release-name}-cnpg-credentials
+        ##
+        secretName: "odoo-postgresql"
+
+## @section Odoo parameters
+##
+## @param enabled Enable or disable Odoo
+##
+enabled: true
+## @param image The image for odoo
+##
+image: mintsystem/odoo:18.0.20250725
+## @param imagePullPolicy Pull policy for Odoo image
+##
+imagePullPolicy: Always
+## @param imagePullSecrets List of image pull secrets for private registries
+##
+imagePullSecrets: []
+## @param proxyMode Enable or disable proxy mode for Odoo
+##
+proxyMode: true
+## @param workers Number of Odoo worker processes (required for websockets/longpolling)
+##
+workers: 2
+## @param maxCronThreads Maximum number of cron threads
+##
+maxCronThreads: 1
+## @param downloadOdooEnterprise Enable or disable downloading Odoo Enterprise
+##
+downloadOdooEnterprise: false
+## @param addonsGitRepos List of addon Git repositories for Odoo
+##
+addonsGitRepos:
+  - https://github.com/Mint-System/Odoo-Apps-Server-Tools.git#16.0
+  - https://github.com/OCA/Server-Tools.git#16.0
+  - https://github.com/OCA/Project.git#16.0
+  - https://github.com/sozialinfo/odoo-apps-sozialinfo.git#16.0
+## @param additionalModulesToInstall List of additional Odoo modules to install alongside Sozialinfo modules
+##
+additionalModulesToInstall:
+  - server_environment_ir_config_parameter
+## @param database The database for odoo
+##
+database: odoo
+## @param initLang The initial language for Odoo
+##
+initLang: de_CH
+## @param listDB Enable or disable listing databases for Odoo
+##
+listDB: false
+## @param githubAddonsCredentialsSecretName Name of secret containing GITHUB_USERNAME and GITHUB_PERSONAL_ACCESS_TOKEN with access to the addons repo.
+##
+githubAddonsCredentialsSecretName: odoo-github
+
+## @section Persistence parameters
+##
+persistence:
+  ## @param persistence.addons.enabled Enable persistence for Odoo addons/modules
+  ##
+  enabled: false
+  ## @param persistence.addons.storageClass Storage class for the addons PVC
+  ##
+  storageClass: ""
+  ## @param persistence.addons.accessModes Access modes for the addons PVC
+  ##
+  accessModes:
+    - ReadWriteOnce
+  ## @param persistence.addons.size Size of the addons PVC
+  ##
+  size: 4Gi
+  ## @param persistence.addons.existingClaim Use an existing PVC for addons
+  ##
+  existingClaim: ""
+  ## @param persistence.addons.mountPath Mount path for the addons persistent volume
+  ##
+  mountPath: /var/lib/odoo/
+
+
+## @section K8up parameters
+##
+k8up:
+  ## @param k8up.enabled Enable or disable K8up
+  ##
+  enabled: false
+
+## @section External Services
+##
+externalServices:
+  ## @param externalServices.meilisearch.enabled Enable Meilisearch integration
+  ##
+  meilisearch:
+    enabled: false
+    ## @param externalServices.meilisearch.serviceName Service name for Meilisearch
+    ##
+    serviceName: "{{ .Release.Name }}-meilisearch"
+    ## @param externalServices.meilisearch.port Port for Meilisearch service
+    ##
+    port: 7700
+
+## @section Extra Environment Variables
+##
+## @param extraEnv Additional environment variables for the Odoo container
+## You can define environment variables in Kubernetes YAML format.
+## This supports both simple values and references to secrets/configmaps.
+## Example:
+##   extraEnv: |
+##     - name: ODOO_EMAIL
+##       value: "admin@example.com"
+##     - name: DB_PASSWORD
+##       valueFrom:
+##         secretKeyRef:
+##           name: my-secret
+##           key: password
+##
+extraEnv: |
+    

@@ -1,0 +1,18 @@
+apiVersion: v1
+entries:
+  sozialinfoOdoo:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-09-04T16:49:27.681526+02:00"
+    description: Sozialinfo Odoo
+    digest: 2583a9289065857360f79e824d26c97822471e29d799edbe877b00850718e30f
+    home: https://kubernetes.build
+    maintainers:
+    - email: sysadmin@sozialinfo.ch
+      name: Sozialinfo
+    name: sozialinfoOdoo
+    type: application
+    urls:
+    - https://sozialinfo.github.io/helm-charts/sozialinfoOdoo-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-09-04T16:49:27.68107+02:00"
