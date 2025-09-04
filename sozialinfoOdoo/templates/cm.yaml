@@ -11,5 +11,3 @@ data:
   ODOO_INIT_LANG: {{ .Values.initLang | quote }}
   PROXY_MODE: {{ .Values.proxyMode | quote }}
   LIST_DB: {{ .Values.listDB | quote }}
-  WORKERS: {{ .Values.workers | default "2" | quote }}
-  MAX_CRON_THREADS: {{ .Values.maxCronThreads | default "1" | quote }}

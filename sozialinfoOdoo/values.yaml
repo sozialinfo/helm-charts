@@ -63,12 +63,6 @@ imagePullSecrets: []
 ## @param proxyMode Enable or disable proxy mode for Odoo
 ##
 proxyMode: true
-## @param workers Number of Odoo worker processes (required for websockets/longpolling)
-##
-workers: 2
-## @param maxCronThreads Maximum number of cron threads
-##
-maxCronThreads: 1
 ## @param downloadOdooEnterprise Enable or disable downloading Odoo Enterprise
 ##
 downloadOdooEnterprise: false

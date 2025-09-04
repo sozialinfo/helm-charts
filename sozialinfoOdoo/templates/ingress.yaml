@@ -8,15 +8,10 @@ metadata:
     cert-manager.io/cluster-issuer: {{ .Values.ingress.clusterIssuerRef }}
     {{- end }}
     {{- if eq .Values.ingress.className "nginx" }}
+    nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
     nginx.ingress.kubernetes.io/upstream-hash-by: "$remote_addr"
-    nginx.ingress.kubernetes.io/proxy-buffering: "off"
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      proxy_set_header Upgrade $http_upgrade;
-      proxy_set_header Connection "upgrade";
-      proxy_http_version 1.1;
-      proxy_cache_bypass $http_upgrade;
     {{- end }}
 spec:
   ingressClassName: {{.Values.ingress.className }}

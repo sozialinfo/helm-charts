@@ -1,7 +1,6 @@
 apiVersion: v2
 name: sozialinfoOdoo
 description: Sozialinfo Odoo
-home: https://kubernetes.build
 maintainers:
   - name: Sozialinfo
     email: sysadmin@sozialinfo.ch
