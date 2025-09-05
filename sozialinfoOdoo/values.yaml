@@ -121,6 +121,20 @@ k8up:
   ##
   enabled: false
 
+## @section Resource parameters
+##
+resources:
+  ## @param resources.requests.cpu CPU request for Odoo container
+  ## @param resources.requests.memory Memory request for Odoo container
+  ## @param resources.limits.memory Memory limit for Odoo container (no CPU limits to avoid throttling)
+  ##
+  requests:
+    cpu: 100m
+    memory: 512Mi
+  limits:
+    # No CPU limits to avoid throttling
+    memory: 1Gi
+
 ## @section External Services
 ##
 externalServices:

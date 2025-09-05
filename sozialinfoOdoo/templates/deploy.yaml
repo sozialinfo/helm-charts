@@ -136,6 +136,10 @@ spec:
           - name: odoo-data
             mountPath: {{ .Values.persistence.mountPath }}
           {{- end }}
+          {{- if .Values.resources }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- end }}
       {{- if .Values.persistence.enabled }}
       volumes:
       - name: odoo-data
