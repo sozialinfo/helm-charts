@@ -169,3 +169,10 @@ externalServices:
 ##
 extraEnv: |
     
+
+## @section Volume Deletion parameters
+##
+volumeDeletion:
+  ## @param volumeDeletion.enabled Enable automatic volume deletion when Helm release is uninstalled
+  ##
+  enabled: false

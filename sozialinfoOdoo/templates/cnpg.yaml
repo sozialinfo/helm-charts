@@ -3,6 +3,11 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
   name: {{ default (printf "%s-odoo-db" .Release.Name ) .Values.cnpg.cluster.nameOverride }}
+  {{- if .Values.volumeDeletion.enabled }}
+  annotations:
+    # Ensure PVCs are deleted when cluster is deleted
+    "postgresql.cnpg.io/pvcPolicy": "delete"
+  {{- end }}
 spec:
   instances: {{ .Values.cnpg.cluster.instances }}
   storage:
