@@ -13,6 +13,9 @@ ingress:
   ## @param ingress.host The host for the ingress
   ##
   host: odoo.knd.local
+  ## @param ingress.tlsSecretName Name of existing TLS secret to use (e.g., wildcard certificate)
+  ##
+  tlsSecretName:
 
 ## @section CloudNativePG parameters
 ##
