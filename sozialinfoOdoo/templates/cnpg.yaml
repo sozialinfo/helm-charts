@@ -12,6 +12,9 @@ spec:
   instances: {{ .Values.cnpg.cluster.instances }}
   storage:
     size: {{ .Values.cnpg.cluster.storage.size }}
+    {{- if .Values.volumeDeletion.enabled }}
+    storageClass: "csi-cinder-sc-delete"
+    {{- end }}
   bootstrap:
     initdb:
       database: {{ .Values.cnpg.cluster.bootstrap.initdb.name }}

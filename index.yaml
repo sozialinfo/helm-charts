@@ -3,7 +3,20 @@ entries:
   sozialinfoOdoo:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-05T15:43:16.290704+02:00"
+    created: "2025-09-05T16:58:29.745323+02:00"
+    description: Sozialinfo Odoo
+    digest: 772fb0378ec2849f12894331bf2e6b8326dc7b90966997831e96e8e4909b0781
+    maintainers:
+    - email: sysadmin@sozialinfo.ch
+      name: Sozialinfo
+    name: sozialinfoOdoo
+    type: application
+    urls:
+    - sozialinfoOdoo-0.1.5.tgz
+    version: 0.1.5
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-09-05T16:58:29.745062+02:00"
     description: Sozialinfo Odoo
     digest: 6bae9cd46ae6935529d9f82743b0b4bf1efc097df4e9a9d22ebd80c96138e0e7
     maintainers:
@@ -16,7 +29,7 @@ entries:
     version: 0.1.4
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-05T15:43:16.290489+02:00"
+    created: "2025-09-05T16:58:29.744437+02:00"
     description: Sozialinfo Odoo
     digest: e170ac8c6bc7515d33ddae2ad509c1339b150f6927d4a6ac334da2ecc59aa9b9
     maintainers:
@@ -29,7 +42,7 @@ entries:
     version: 0.1.3
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-05T15:43:16.290248+02:00"
+    created: "2025-09-05T16:58:29.743692+02:00"
     description: Sozialinfo Odoo
     digest: 54087bf5fb364220f8ca3bf6de0669157979647e3d5ff88948065c200d7720fb
     maintainers:
@@ -42,7 +55,7 @@ entries:
     version: 0.1.2
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-05T15:43:16.29003+02:00"
+    created: "2025-09-05T16:58:29.742966+02:00"
     description: Sozialinfo Odoo
     digest: 72201cb4c1753ce136d1883e01bbc1688343aac8de0193b09a348c2b12a59851
     maintainers:
@@ -55,7 +68,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-05T15:43:16.289759+02:00"
+    created: "2025-09-05T16:58:29.742368+02:00"
     description: Mint System Odoo
     digest: 2583a9289065857360f79e824d26c97822471e29d799edbe877b00850718e30f
     home: https://kubernetes.build
@@ -67,4 +80,4 @@ entries:
     urls:
     - sozialinfoOdoo-0.1.0.tgz
     version: 0.1.0
-generated: "2025-09-05T15:43:16.289401+02:00"
+generated: "2025-09-05T16:58:29.741505+02:00"
