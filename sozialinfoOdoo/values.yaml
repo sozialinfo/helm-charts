@@ -76,6 +76,9 @@ addonsGitRepos:
   - https://github.com/OCA/Server-Tools.git#16.0
   - https://github.com/OCA/Project.git#16.0
   - https://github.com/sozialinfo/odoo-apps-sozialinfo.git#16.0
+## @param addonsInImage Whether addons are pre-built in the Docker image (for PR builds)
+##
+addonsInImage: false
 ## @param additionalModulesToInstall List of additional Odoo modules to install alongside Sozialinfo modules
 ##
 additionalModulesToInstall:

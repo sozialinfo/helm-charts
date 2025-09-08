@@ -34,22 +34,31 @@ spec:
               
               # Download Odoo Enterprise if enabled
               {{- if .Values.downloadOdooEnterprise }}
-              /entrypoint.sh download-odoo-enterprise && \
+              /entrypoint.sh download-git-archive && \
               {{- end }}
               
-              # Clone all addon repositories
+              # Clone addon repositories (only if not pre-built in image)
+              {{- if not .Values.addonsInImage }}
               /entrypoint.sh git-clone-addons && \
+              {{- end }}
               
               # Initialize the database
               /entrypoint.sh init-db && \
               
-              # Install Sozialinfo-specific modules
-              SOZIALINFO_ADDONS=$(manifestoo --select-addons-dir /var/lib/odoo/git/github.com/sozialinfo/odoo-apps-sozialinfo list --separator=,) && \
-              /entrypoint.sh init-module $SOZIALINFO_ADDONS && \
+              {{- if .Values.addonsInImage }}
+              # PR build: Install all pre-built addons from Docker image
+              ADDONS_TO_INSTALL=$(manifestoo --select-addons-dir /mnt/extra-addons list --separator=,)
+              {{- else }}
+              # Regular build: Install only Sozialinfo modules from git repository
+              ADDONS_TO_INSTALL=$(manifestoo --select-addons-dir /var/lib/odoo/git/github.com/sozialinfo/odoo-apps-sozialinfo list --separator=,)
+              {{- end }}
+              
+              # Install the determined addons
+              /entrypoint.sh init-module $ADDONS_TO_INSTALL && \
               
               {{- if .Values.additionalModulesToInstall }}
-              # Install additional modules
-              ADDITIONAL_MODULES="{{ join "," .Values.additionalModulesToInstall }}" && \
+              # Install additional modules specified in values
+              ADDITIONAL_MODULES="{{ join "," .Values.additionalModulesToInstall }}"
               /entrypoint.sh init-module $ADDITIONAL_MODULES && \
               {{- end }}
               
