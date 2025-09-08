@@ -7,6 +7,11 @@ metadata:
 data:
   ODOO_DATABASE: {{ .Values.database }}
   ADDONS_GIT_REPOS: {{ join "," .Values.addonsGitRepos | quote }}
+  {{- if .Values.addonsInImage }}
+  ADDONS_PATH: "/opt/odoo/odoo/addons,/var/lib/odoo/addons/16.0,/opt/odoo/addons,/mnt/extra-addons"
+  {{- else }}
+  ADDONS_PATH: "/opt/odoo/odoo/addons,/var/lib/odoo/addons/16.0,/opt/odoo/addons,/var/lib/odoo/git"
+  {{- end }}
   ODOO_ADDONS_PATH: "/var/lib/odoo/enterprise"
   ODOO_INIT_LANG: {{ .Values.initLang | quote }}
   PROXY_MODE: {{ .Values.proxyMode | quote }}
